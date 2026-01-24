@@ -3,3 +3,5 @@ pdf
 public
 .wrangler
 .direnv
+
+.claude/settings.local.json
