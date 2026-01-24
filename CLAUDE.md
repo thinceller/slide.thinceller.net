@@ -6,12 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a presentation hosting platform using Marp (Markdown Presentation Ecosystem) to create slides from Markdown files and deploy them to Cloudflare Workers.
 
+## Development Environment
+
+- **Prerequisites**: Nix (with flakes enabled), direnv (recommended)
+- **Setup**: `direnv allow` or `nix develop`
+- **Provided tools**: Node.js v22, pnpm
+
 ## Key Commands
 
 ### Development
 - `pnpm dev` - marpのwatchモードとwrangler開発サーバーを並列実行
-- `pnpm build` - HTML/PDF生成 + index.html生成を一括実行
+- `pnpm build` - すべてのビルドタスクを並列実行
 - `pnpm deploy` - Cloudflare Workersにデプロイ
+
+### Build Subtasks
+`pnpm build` は以下のサブタスクを並列実行します：
+- `build:html` - Marp CLIでMarkdown→HTML変換 (`public/`)
+- `build:images` - 画像を`public/images/`にコピー
+- `build:index` - スライド一覧ページ (`public/index.html`) を自動生成
+- `build:pdf` - PDF版を生成 (`pdf/`)
 
 ### Code Quality
 - `pnpm lint` - Run Biome linter with auto-fix
@@ -23,23 +36,47 @@ The project follows a simple static site generation pattern:
 
 1. **Source slides** are written in Markdown format in the `slides/` directory
 2. **Marp CLI** converts these to HTML presentations during build
-3. **Cloudflare Workers** serves the built HTML files from the `public/` directory
-4. Slides are accessible at URLs like `https://slide.thinceller.workers.dev/[slide-name]`
+3. **Index generator** creates a slide listing page from frontmatter metadata
+4. **Cloudflare Workers** serves the built HTML files from the `public/` directory
+5. Slides are accessible at URLs like `https://slide.thinceller.workers.dev/[slide-name]`
+
+## Generated Output
+
+ビルドで生成されるディレクトリ（`.gitignore`対象、直接編集不可）：
+- `public/` - HTMLファイル、画像、index.html
+- `pdf/` - PDFファイル
+
+## Frontmatter Schema
+
+スライドのフロントマターで使用できるフィールド：
+
+```yaml
+---
+# Index page用メタデータ
+title: スライドタイトル          # 一覧ページに表示（省略時はファイル名）
+description: スライドの説明      # 一覧ページに表示（省略可）
+
+# OGP/SEO用メタデータ
+author: 作成者
+keywords: キーワード1,キーワード2
+url: https://slide.thinceller.workers.dev/[slug]
+image: OGP画像URL
+
+# Marp設定（<!-- -->コメントでも可）
+marp: true
+theme: gaia
+paginate: true
+---
+```
 
 ## Adding New Slides
 
 1. Create a new `.md` file in the `slides/` directory
-2. Use Marp's Markdown syntax with frontmatter for configuration:
-   ```markdown
-   ---
-   marp: true
-   theme: gaia
-   paginate: true
-   ---
-   ```
+2. Add frontmatter (see Frontmatter Schema above)
 3. Place any images in `slides/images/`
-4. Build with `pnpm build`
-5. Deploy with `pnpm deploy`
+4. Build with `pnpm build`, deploy with `pnpm deploy`
+
+**Note**: `scripts/generate-index.js` が各スライドのフロントマターから `title` と `description` を抽出し、一覧ページを自動生成します（`title` 未設定時はファイル名を使用）。
 
 ## Marp-specific Markdown Extensions
 
@@ -54,21 +91,23 @@ The project follows a simple static site generation pattern:
 ## Configuration Notes
 
 - **Biome** is used for linting/formatting (not ESLint/Prettier)
-- **Node.js v22** and **pnpm** are required (managed by Nix flake)
-- The `public/` directory is generated - don't edit files there directly
-- Cloudflare Workers configuration is in `wrangler.jsonc`
-- Available Marp themes: default, gaia, uncover
+- **Cloudflare Workers** configuration is in `wrangler.jsonc`
+- **Available Marp themes**: default, gaia, uncover
 
 ## Slide Creation Guidelines
 
-スライド作成時の注意点と情報整理のポイント:
-- スライドの粒度は1枚のスライドで1つの主要な概念や考えに焦点を当てる
-- 情報の複雑さを考慮し、各スライドは理解しやすい量の情報に抑える
-- 視覚的な階層を意識し、見出し、箇条書き、図解などを効果的に使用
-- 文字数は少なめに保ち、簡潔で明確な表現を心がける
-- 重要なポイントは大きめのフォントや強調表示で目立たせる
-- コンテキストを考慮し、聴衆の背景知識に合わせた説明レベルを選択
-- 論理的な流れを意識し、スライド間の繋がりを自然にする
-- 必要に応じて、図や画像を使って複雑な概念を分かりやすく説明
-- 余白や空白を適切に使い、読みやすいレイアウトを心がける
-- 1枚のスライドで伝えたいメッセージを明確にし、焦点を絞る
+スライド作成時の注意点：
+
+**コンテンツ**
+- 1スライド1メッセージ：1つの主要な概念に焦点を絞る
+- 簡潔な表現：文字数は少なめに、明確に
+- 聴衆を意識：背景知識に合わせた説明レベルを選択
+
+**構成**
+- 論理的な流れ：スライド間の繋がりを自然に
+- 視覚的階層：見出し、箇条書き、図解を効果的に使用
+- 適切な余白：読みやすいレイアウトを心がける
+
+**強調**
+- 重要ポイントは大きめのフォントや強調表示で目立たせる
+- 複雑な概念は図や画像で視覚的に説明
