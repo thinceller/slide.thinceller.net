@@ -9,11 +9,9 @@ This is a presentation hosting platform using Marp (Markdown Presentation Ecosys
 ## Key Commands
 
 ### Development
-- `pnpm marp:serve` - Preview slides locally with hot reload at http://localhost:8080
-- `pnpm marp:build` - Build HTML slides from Markdown files in `slides/` to `public/`
-- `pnpm marp:build:pdf` - Generate PDF versions of slides
-- `pnpm dev` - Run Cloudflare Workers development server locally
-- `pnpm deploy` - Deploy to Cloudflare Workers
+- `pnpm dev` - marpのwatchモードとwrangler開発サーバーを並列実行
+- `pnpm build` - HTML/PDF生成 + index.html生成を一括実行
+- `pnpm deploy` - Cloudflare Workersにデプロイ
 
 ### Code Quality
 - `pnpm lint` - Run Biome linter with auto-fix
@@ -40,7 +38,7 @@ The project follows a simple static site generation pattern:
    ---
    ```
 3. Place any images in `slides/images/`
-4. Build with `pnpm marp:build`
+4. Build with `pnpm build`
 5. Deploy with `pnpm deploy`
 
 ## Marp-specific Markdown Extensions
