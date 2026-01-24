@@ -7,9 +7,7 @@ const SLIDES_DIR = path.join(import.meta.dirname, "../slides");
 const OUTPUT_DIR = path.join(import.meta.dirname, "../public");
 const OUTPUT_PATH = path.join(OUTPUT_DIR, "index.html");
 
-const ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>`;
+const ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 
 function getSlideData(file) {
 	const filePath = path.join(SLIDES_DIR, file);
@@ -55,70 +53,84 @@ function generateIndexHTML(slides) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Slides - thinceller</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #455a64;
-      --secondary: #fff8e1;
-      --accent: #0288d1;
-      --card-bg: rgba(69, 90, 100, 0.06);
-      --card-border: rgba(69, 90, 100, 0.15);
-      --text-muted: rgba(69, 90, 100, 0.7);
+      /* 背景 */
+      --color-bg: #ffffff;
+      --color-bg-secondary: #f9fafb;
+
+      /* テキスト */
+      --color-text: #111827;
+      --color-text-muted: #6b7280;
+
+      /* ボーダー */
+      --color-border: #e5e7eb;
+
+      /* アクセント */
+      --color-accent: #2563eb;
+      --color-accent-hover: #1d4ed8;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'DM Sans', system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
-      background: var(--secondary);
+      background: var(--color-bg);
       min-height: 100vh;
-      color: var(--primary);
-      overflow-x: hidden;
+      color: var(--color-text);
     }
 
     .container {
-      max-width: 900px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 5rem 2rem;
-      position: relative;
+      padding: 0 1.5rem;
     }
 
-    header {
-      margin-bottom: 4rem;
+    /* Hero Section - Gaia lead風センター配置 */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
     }
 
-    h1 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(3rem, 8vw, 4.5rem);
-      font-weight: 600;
-      line-height: 1.1;
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
       letter-spacing: -0.02em;
+      color: var(--color-text);
     }
 
-    .subtitle {
-      margin-top: 0.75rem;
-      font-size: 1.1rem;
-      color: var(--text-muted);
+    .hero .subtitle {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Content Section */
+    .content {
+      padding-bottom: 4rem;
     }
 
     .slide-grid {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
     .slide-card {
       opacity: 0;
-      animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: calc(var(--i) * 0.08s + 0.2s);
+      animation: fadeIn 0.5s ease-out forwards;
+      animation-delay: calc(var(--i) * 0.06s + 0.1s);
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -126,33 +138,26 @@ function generateIndexHTML(slides) {
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 1.5rem;
-      padding: 1.5rem 2rem;
-      background: #fff;
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
       text-decoration: none;
       color: inherit;
-      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: border-color 0.2s ease;
     }
 
     .card-link:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px -12px rgba(69, 90, 100, 0.15);
+      border-color: var(--color-accent);
     }
 
     .slide-num {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.75rem;
+      font-size: 1rem;
       font-weight: 600;
-      color: var(--accent);
-      opacity: 0.7;
-      transition: opacity 0.3s;
-    }
-
-    .card-link:hover .slide-num {
-      opacity: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-text-muted);
+      min-width: 1.5rem;
     }
 
     .card-content {
@@ -160,94 +165,92 @@ function generateIndexHTML(slides) {
     }
 
     .slide-title {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
       font-weight: 500;
       line-height: 1.4;
       margin: 0;
     }
 
     .slide-description {
-      margin-top: 0.35rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
       line-height: 1.5;
     }
 
     .arrow {
-      width: 40px;
-      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--primary);
-      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      color: var(--color-text-muted);
+      transition: color 0.2s ease;
     }
 
     .arrow svg {
-      width: 18px;
-      height: 18px;
-      transition: transform 0.3s;
+      width: 20px;
+      height: 20px;
     }
 
     .card-link:hover .arrow {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
+      color: var(--color-accent);
     }
 
-    .card-link:hover .arrow svg {
-      transform: translateX(3px);
-    }
-
+    /* Footer */
     footer {
-      margin-top: 5rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--card-border);
+      padding: 2rem 0;
+      border-top: 1px solid var(--color-border);
       text-align: center;
       font-size: 0.875rem;
-      color: var(--text-muted);
+      color: var(--color-text-muted);
     }
 
     footer a {
-      color: var(--primary);
+      color: var(--color-text);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.2s ease;
     }
 
     footer a:hover {
-      color: var(--accent);
+      color: var(--color-accent);
     }
 
     @media (max-width: 640px) {
-      .container { padding: 3rem 1.25rem; }
-      header { margin-bottom: 2.5rem; }
+      .hero {
+        padding: 4rem 1rem 3rem;
+      }
+      .content {
+        padding-bottom: 3rem;
+      }
+      .container {
+        padding: 0 1rem;
+      }
       .card-link {
         grid-template-columns: auto 1fr;
         gap: 1rem;
-        padding: 1.25rem 1.5rem;
+        padding: 1rem 1.25rem;
       }
-      .slide-num { font-size: 1.25rem; }
-      .slide-title { font-size: 1.1rem; }
+      .slide-title { font-size: 1rem; }
       .arrow { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Slides</h1>
-      <p class="subtitle">by thinceller</p>
-    </header>
-    <ul class="slide-grid">
+  <header class="hero">
+    <h1>slide.thinceller.net</h1>
+    <p class="subtitle">Presentation slides</p>
+  </header>
+  <main class="content">
+    <div class="container">
+      <ul class="slide-grid">
 ${slideListHTML}
-    </ul>
-    <footer>
+      </ul>
+    </div>
+  </main>
+  <footer>
+    <div class="container">
       <a href="https://github.com/thinceller" target="_blank" rel="noopener">@thinceller</a>
-    </footer>
-  </div>
+    </div>
+  </footer>
 </body>
 </html>`;
 }
