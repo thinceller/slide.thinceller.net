@@ -1,0 +1,10 @@
+{
+	"name": "@slide/use-state",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "slidev --open",
+		"build": "slidev build --base /use-state/ --out ../../dist/use-state",
+		"export-pdf": "mkdir -p ../../pdf && slidev export --output ../../pdf/use-state.pdf"
+	}
+}

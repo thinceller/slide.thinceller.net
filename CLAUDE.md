@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a presentation hosting platform using Marp (Markdown Presentation Ecosystem) to create slides from Markdown files and deploy them to Cloudflare Workers.
+This is a presentation hosting platform using Slidev to create slides from Markdown files and deploy them to Cloudflare Workers. The project uses a pnpm workspace monorepo structure.
 
 ## Development Environment
 
@@ -12,21 +12,42 @@ This is a presentation hosting platform using Marp (Markdown Presentation Ecosys
 - **Setup**: `direnv allow` or `nix develop`
 - **Provided tools**: Node.js v22, pnpm
 
+## Project Structure
+
+```
+slide.thinceller.net/
+├── package.json              # ルート設定
+├── pnpm-workspace.yaml       # ワークスペース定義
+├── wrangler.jsonc            # Cloudflare Workers設定
+├── packages/
+│   └── theme/                # カスタムテーマ (@slide/theme)
+│       ├── styles/index.css
+│       └── layouts/
+├── slides/
+│   └── {slug}/               # 各スライド (@slide/{slug})
+│       ├── package.json
+│       ├── slides.md
+│       └── public/           # スライド固有の画像
+├── scripts/
+│   └── generate-index.js     # index.html生成
+└── dist/                     # ビルド出力 (gitignore)
+```
+
 ## Key Commands
 
 ### Development
-- `pnpm dev` - marpのwatchモードとwrangler開発サーバーを並列実行
-- `pnpm build` - clean → prep → main（並列）の順でビルド実行
+- `pnpm dev` - 開発サーバーを起動（デフォルトは use-state スライド）
+- `pnpm build` - 全スライドをビルドし、index.htmlを生成
 - `pnpm deploy` - Cloudflare Workersにデプロイ
 
 ### Build Process
 `pnpm build` は以下の順序で実行されます：
-1. `clean` - `public/`と`pdf/`ディレクトリを削除
-2. `build:prep` - `public/images/`を作成し、画像をコピー
-3. `build:main` - 以下のタスクを**並列実行**：
-   - `build:html` - Marp CLIでMarkdown→HTML変換 (`public/`)
-   - `build:index` - スライド一覧ページ (`public/index.html`) を自動生成
-   - `build:pdf` - PDF版を生成 (`pdf/`)
+1. `clean` - `dist/`ディレクトリを削除
+2. `build:slides` - 全スライドパッケージをビルド（`pnpm --filter "./slides/*" build`）
+3. `build:index` - スライド一覧ページ (`dist/index.html`) を生成
+
+### PDF Export
+- `pnpm build:pdf` - 全スライドのPDFを`pdf/`に出力
 
 ### Code Quality
 - `pnpm lint` - Run Biome linter with auto-fix
@@ -34,67 +55,72 @@ This is a presentation hosting platform using Marp (Markdown Presentation Ecosys
 
 ## Architecture
 
-The project follows a simple static site generation pattern:
+The project follows a monorepo pattern with pnpm workspaces:
 
-1. **Source slides** are written in Markdown format in the `slides/` directory
-2. **Marp CLI** converts these to HTML presentations during build
+1. **Custom theme** (`packages/theme/`) provides consistent styling across all slides
+2. **Each slide** (`slides/{slug}/`) is an independent Slidev project
 3. **Index generator** creates a slide listing page from frontmatter metadata
-4. **Cloudflare Workers** serves the built HTML files from the `public/` directory
-5. Slides are accessible at URLs like `https://slide.thinceller.workers.dev/[slide-name]`
+4. **Cloudflare Workers** serves the built files from the `dist/` directory
+5. Slides are accessible at URLs like `https://slide.thinceller.workers.dev/{slug}/`
 
 ## Generated Output
 
 ビルドで生成されるディレクトリ（`.gitignore`対象、直接編集不可）：
-- `public/` - HTMLファイル、画像、index.html
+- `dist/` - HTMLファイル（SPAとindex.html）
 - `pdf/` - PDFファイル
 
-## Frontmatter Schema
+## Frontmatter Schema (Slidev)
 
 スライドのフロントマターで使用できるフィールド：
 
 ```yaml
 ---
-# Index page用メタデータ
-title: スライドタイトル          # 一覧ページに表示（省略時はファイル名）
-description: スライドの説明      # 一覧ページに表示（省略可）
-
-# OGP/SEO用メタデータ
+title: スライドタイトル          # 一覧ページに表示（省略時はディレクトリ名）
+info: |                          # 一覧ページのdescriptionとして使用
+  スライドの説明
 author: 作成者
-keywords: キーワード1,キーワード2
-url: https://slide.thinceller.workers.dev/[slug]
-image: OGP画像URL
-
-# Marp設定（<!-- -->コメントでも可）
-marp: true
-theme: gaia
-paginate: true
+theme: ../../packages/theme      # カスタムテーマへの相対パス
+highlighter: shiki               # コードハイライト
+drawings:
+  persist: false
 ---
 ```
 
 ## Adding New Slides
 
-1. Create a new `.md` file in the `slides/` directory
-2. Add frontmatter (see Frontmatter Schema above)
-3. Place any images in `slides/images/`
-4. Build with `pnpm build`, deploy with `pnpm deploy`
+1. `slides/{slug}/` ディレクトリを作成
+2. `package.json` を作成:
+   ```json
+   {
+     "name": "@slide/{slug}",
+     "version": "0.0.1",
+     "private": true,
+     "scripts": {
+       "dev": "slidev --open",
+       "build": "slidev build --base /{slug}/ --out ../../dist/{slug}",
+       "export-pdf": "mkdir -p ../../pdf && slidev export --output ../../pdf/{slug}.pdf"
+     }
+   }
+   ```
+3. `slides.md` を作成（theme: ../../packages/theme）
+4. 画像は `public/` に配置し、絶対パス（`/image.png`）で参照
+5. `pnpm install` でワークスペースを認識
+6. `pnpm build` で全スライドビルド
 
-**Note**: `scripts/generate-index.js` が各スライドのフロントマターから `title` と `description` を抽出し、一覧ページを自動生成します（`title` 未設定時はファイル名を使用）。
-
-## Marp-specific Markdown Extensions
+## Slidev Markdown Syntax
 
 - `---` creates new slides
-- `<!-- _class: lead -->` applies special styling to a slide
-- `![bg](image.jpg)` sets background image
-- `![bg left](image.jpg)` splits slide with image on left
-- `<!-- fit -->` auto-fits text to slide
-- `$$` for LaTeX math expressions
-- `<!-- paginate: true -->` enables page numbers
+- `layout: center` - センター配置のスライド
+- `class: bg-blue-600 text-white` - UnoCSS classでスタイリング
+- `<img src="/image.png" class="h-60 mx-auto" />` - 画像の挿入
+- コードブロック: シンタックスハイライト付き
 
 ## Configuration Notes
 
 - **Biome** is used for linting/formatting (not ESLint/Prettier)
 - **Cloudflare Workers** configuration is in `wrangler.jsonc`
-- **Available Marp themes**: default, gaia, uncover
+- **Custom theme** is in `packages/theme/`
+- **UnoCSS** is available for utility classes
 
 ## Slide Creation Guidelines
 

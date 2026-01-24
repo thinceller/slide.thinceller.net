@@ -4,32 +4,35 @@ import path from "node:path";
 import matter from "gray-matter";
 
 const SLIDES_DIR = path.join(import.meta.dirname, "../slides");
-const OUTPUT_DIR = path.join(import.meta.dirname, "../public");
+const OUTPUT_DIR = path.join(import.meta.dirname, "../dist");
 const OUTPUT_PATH = path.join(OUTPUT_DIR, "index.html");
 
 const ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 
-function getSlideData(file) {
-	const filePath = path.join(SLIDES_DIR, file);
-	const content = fs.readFileSync(filePath, "utf-8");
+function getSlideData(dirName) {
+	const slidesPath = path.join(SLIDES_DIR, dirName, "slides.md");
+	const content = fs.readFileSync(slidesPath, "utf-8");
 	const { data } = matter(content);
-	const slug = file.replace(".md", "");
 
 	return {
-		slug,
-		title: data.title || slug,
-		description: data.description || "",
+		slug: dirName,
+		title: data.title || dirName,
+		description: data.description || data.info || "",
 	};
 }
 
 function renderSlideItem(slide, index) {
 	const num = String(index + 1).padStart(2, "0");
-	const descriptionHTML = slide.description
-		? `<p class="slide-description">${slide.description}</p>`
+	const description =
+		typeof slide.description === "string"
+			? slide.description.trim().split("\n")[0]
+			: "";
+	const descriptionHTML = description
+		? `<p class="slide-description">${description}</p>`
 		: "";
 
 	return `      <li class="slide-card" style="--i: ${index}">
-        <a href="/${slide.slug}" class="card-link">
+        <a href="/${slide.slug}/" class="card-link">
           <span class="slide-num">${num}</span>
           <div class="card-content">
             <h2 class="slide-title">${slide.title}</h2>
@@ -256,10 +259,11 @@ ${slideListHTML}
 }
 
 function main() {
-	const mdFiles = fs
-		.readdirSync(SLIDES_DIR)
-		.filter((file) => file.endsWith(".md"));
-	const slides = mdFiles.map(getSlideData);
+	const slideDirs = fs.readdirSync(SLIDES_DIR).filter((name) => {
+		const slidesPath = path.join(SLIDES_DIR, name, "slides.md");
+		return fs.existsSync(slidesPath);
+	});
+	const slides = slideDirs.map(getSlideData);
 	const html = generateIndexHTML(slides);
 
 	fs.mkdirSync(OUTPUT_DIR, { recursive: true });

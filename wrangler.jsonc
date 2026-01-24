@@ -7,7 +7,7 @@
 	"name": "slide",
 	"compatibility_date": "2025-05-22",
 	"assets": {
-		"directory": "./public"
+		"directory": "./dist"
 	},
 	"observability": {
 		"enabled": true

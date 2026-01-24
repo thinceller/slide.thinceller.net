@@ -1,0 +1,8 @@
+{
+	"name": "@slide/theme",
+	"version": "0.0.1",
+	"private": true,
+	"slidev": {
+		"colorSchema": "both"
+	}
+}
