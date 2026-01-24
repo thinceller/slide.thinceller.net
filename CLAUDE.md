@@ -16,15 +16,17 @@ This is a presentation hosting platform using Marp (Markdown Presentation Ecosys
 
 ### Development
 - `pnpm dev` - marpのwatchモードとwrangler開発サーバーを並列実行
-- `pnpm build` - すべてのビルドタスクを並列実行
+- `pnpm build` - clean → prep → main（並列）の順でビルド実行
 - `pnpm deploy` - Cloudflare Workersにデプロイ
 
-### Build Subtasks
-`pnpm build` は以下のサブタスクを並列実行します：
-- `build:html` - Marp CLIでMarkdown→HTML変換 (`public/`)
-- `build:images` - 画像を`public/images/`にコピー
-- `build:index` - スライド一覧ページ (`public/index.html`) を自動生成
-- `build:pdf` - PDF版を生成 (`pdf/`)
+### Build Process
+`pnpm build` は以下の順序で実行されます：
+1. `clean` - `public/`と`pdf/`ディレクトリを削除
+2. `build:prep` - `public/images/`を作成し、画像をコピー
+3. `build:main` - 以下のタスクを**並列実行**：
+   - `build:html` - Marp CLIでMarkdown→HTML変換 (`public/`)
+   - `build:index` - スライド一覧ページ (`public/index.html`) を自動生成
+   - `build:pdf` - PDF版を生成 (`pdf/`)
 
 ### Code Quality
 - `pnpm lint` - Run Biome linter with auto-fix
