@@ -36,7 +36,19 @@ slide.thinceller.net/
 ## Key Commands
 
 ### Development
-- `pnpm dev` - Start development server (defaults to use-state slide)
+```bash
+# 特定のスライドを開発
+pnpm --filter @slide/{slug} dev
+
+# 例
+pnpm --filter @slide/use-state dev
+pnpm --filter @slide/nix-intro dev
+
+# または slides/{slug}/ ディレクトリに移動して
+cd slides/nix-intro && pnpm dev
+```
+
+### Build & Deploy
 - `pnpm build` - Build all slides and generate index.html
 - `pnpm deploy` - Deploy to Cloudflare Workers
 
