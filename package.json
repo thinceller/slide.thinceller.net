@@ -3,6 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"create-slide": "node scripts/create-slide.js",
 		"dev": "pnpm --filter @slide/use-state dev",
 		"build": "run-s clean build:slides build:index",
 		"build:slides": "pnpm --filter \"./slides/*\" build",
