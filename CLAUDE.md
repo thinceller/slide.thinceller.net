@@ -127,6 +127,17 @@ Always reference the custom theme with the relative path `../../packages/theme` 
 - **UnoCSS** utility classes are available in slides
 - Refer to [Slidev documentation](https://sli.dev) for markdown syntax
 
+### Layout-Specific Frontmatter
+Each slide can specify a `layout` in frontmatter. Some layouts accept additional properties:
+
+- **section**: Use `number` (not `sectionNumber`) to display section number
+  ```yaml
+  ---
+  layout: section
+  number: 1
+  ---
+  ```
+
 ## Slide Content Guidelines
 
 - **One message per slide**: Focus on a single key concept
