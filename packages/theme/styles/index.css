@@ -256,6 +256,7 @@
 	border-collapse: collapse;
 	font-size: 0.95rem;
 	margin: 1rem 0;
+	background: var(--theme-bg);
 }
 
 .slidev-layout th {
