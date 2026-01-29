@@ -1,0 +1,10 @@
+{
+	"name": "@slide/nix-intro",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "slidev --open",
+		"build": "slidev build --base /nix-intro/ --out ../../dist/nix-intro",
+		"export-pdf": "mkdir -p ../../pdf && slidev export --output ../../pdf/nix-intro.pdf"
+	}
+}
