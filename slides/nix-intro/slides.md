@@ -357,6 +357,68 @@ layout: section
 number: 4
 ---
 
+# devenv
+
+---
+
+## devenv とは
+
+- **Nixベースの開発環境構築ツール** - より手軽にNixを始められる
+- `flake.nix` を直接書かなくてよい
+- 高レベルAPIで簡単に設定できる
+- Nix の再現性を維持しつつ、学習コストを大幅に削減
+
+```bash
+# インストール
+$ nix profile install github:cachix/devenv/latest
+
+# プロジェクト初期化
+$ devenv init
+```
+
+---
+
+## devenv.nix の例
+
+```nix
+# devenv.nix
+{ pkgs, ... }: {
+  languages.javascript = {
+    enable = true;
+    package = pkgs.nodejs_22;
+    pnpm.enable = true;
+  };
+}
+```
+
+<v-click>
+
+→ flake.nix と比較して：
+- **言語サポートが組み込み**: `languages.javascript.enable = true` だけ
+- **設定が直感的**: Nix言語の深い知識が不要
+- **ボイラープレート不要**: `inputs` / `outputs` の記述が不要
+
+</v-click>
+
+---
+
+## devenv の便利な機能
+
+<v-clicks>
+
+- **言語サポート**: Node.js, Python, Go, Rust など主要言語を簡単に設定
+- **サービス管理**: PostgreSQL, Redis, MySQL などをワンライナーで起動
+- **pre-commit フック**: コード品質チェックを自動化
+- **テスト**: `devenv test` で環境のテストを実行
+- **コンテナ生成**: `devenv container` で OCI コンテナイメージを生成
+
+</v-clicks>
+
+---
+layout: section
+number: 5
+---
+
 # まとめ
 
 ---
@@ -372,7 +434,7 @@ $ curl -L https://nixos.org/nix/install | sh
 **Flakes を有効化**
 
 ```bash
-# ~/.config/nix/nix.conf
+# /etc/nix/nix.conf or ~/.config/nix/nix.conf
 experimental-features = nix-command flakes
 ```
 
@@ -380,6 +442,7 @@ experimental-features = nix-command flakes
 - [Nix公式サイト](https://nixos.org/)
 - [Zero to Nix](https://zero-to-nix.com/)
 - [nix.dev](https://nix.dev/)
+- [devenv](https://devenv.sh/)
 
 ---
 layout: end
