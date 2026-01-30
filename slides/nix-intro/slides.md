@@ -79,6 +79,22 @@ number: 1
 
 ---
 
+## nixpkgs - 世界最大のパッケージリポジトリ
+
+- **Nixpkgs** は Nix のパッケージコレクション
+- **110,000以上** のパッケージを収録
+- [Repology](https://repology.org/) の集計で世界最大のリポジトリ
+
+---
+layout: image
+---
+
+<img src="/repology-nixpkgs.png" class="shadow" alt="Repology - nixpkgsが最大のリポジトリであることを示すグラフ" />
+
+出典: [Repology](https://repology.org/)
+
+---
+
 ## 「純粋関数型」ってどういうこと？
 
 - 数学の関数のように：
