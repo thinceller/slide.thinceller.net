@@ -1,0 +1,10 @@
+{
+	"name": "@slide/nix-container-image",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "slidev --open",
+		"build": "slidev build --base /nix-container-image/ --out ../../dist/nix-container-image",
+		"export-pdf": "mkdir -p ../../pdf && slidev export --output ../../pdf/nix-container-image.pdf"
+	}
+}

@@ -29,6 +29,8 @@ importers:
 
   packages/theme: {}
 
+  slides/nix-container-image: {}
+
   slides/nix-intro: {}
 
   slides/use-state: {}

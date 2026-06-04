@@ -106,10 +106,13 @@ These directories are gitignored and should not be edited directly:
    author: author-name
    theme: ../../packages/theme
    highlighter: shiki
+   htmlAttrs:
+     lang: ja
    drawings:
      persist: false
    ---
    ```
+   `htmlAttrs.lang: ja` is required: the theme's headings use `word-break: auto-phrase`, which only breaks Japanese at phrase boundaries when the document language is Japanese.
 4. Place images in `public/` and reference with absolute paths (`/image.png`)
 5. Run `pnpm install` to register the workspace
 6. Run `pnpm build` to build all slides
