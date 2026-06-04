@@ -5,6 +5,8 @@ info: |
 author: thinceller
 theme: ../../packages/theme
 highlighter: shiki
+htmlAttrs:
+  lang: ja
 drawings:
   persist: false
 ---

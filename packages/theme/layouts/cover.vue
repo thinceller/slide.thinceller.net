@@ -28,7 +28,7 @@
 .cover-content {
 	position: relative;
 	z-index: 1;
-	max-width: 70%;
+	max-width: 85%;
 }
 
 .accent-line {

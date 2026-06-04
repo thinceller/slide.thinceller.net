@@ -86,6 +86,7 @@
 	letter-spacing: -0.03em;
 	color: var(--theme-text);
 	margin-bottom: 1rem;
+	word-break: auto-phrase; /* 日本語を文節単位で自然に改行 */
 }
 
 .slidev-layout h2 {
@@ -98,6 +99,7 @@
 	margin-bottom: 1.25rem;
 	padding-bottom: 0.75rem;
 	border-bottom: 2px solid var(--theme-border);
+	word-break: auto-phrase; /* 日本語を文節単位で自然に改行 */
 }
 
 .slidev-layout h3 {
@@ -106,6 +108,7 @@
 	font-weight: 600;
 	color: var(--theme-text-secondary);
 	margin-bottom: 0.75rem;
+	word-break: auto-phrase; /* 日本語を文節単位で自然に改行 */
 }
 
 .slidev-layout p {
