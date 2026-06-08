@@ -139,6 +139,8 @@ nix run .#nextjs-image | docker load   # tarball を store に残さずストリ
 
 → 宣言的・再現可能なイメージが欲しいなら、Nix は有力な選択肢
 
+サンプルは [thinceller/nix-container-image-sample](https://github.com/thinceller/nix-container-image-sample)
+
 ---
 
 ## 参考リソース
