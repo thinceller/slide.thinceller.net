@@ -19,7 +19,7 @@
 		"@biomejs/biome": "1.9.4",
 		"@slidev/cli": "52.11.3",
 		"gray-matter": "4.0.3",
-		"npm-run-all2": "8.0.4",
+		"npm-run-all2": "9.0.3",
 		"playwright-chromium": "1.49.0",
 		"wrangler": "4.60.0"
 	},
